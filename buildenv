@@ -1,7 +1,7 @@
 # Update bump details accordingly. Use bump check to confirm.
 # bump: snappy-c-version /SNAPPY-C_VERSION="(.*)"/ https://github.com/andikleen/snappy-c.git|semver:*
-# SNAPPY-C_VERSION="V.R.M" # Specify a stable release
-# export ZOPEN_STABLE_TAG="v${SNAPPY-C_VERSION}"
+SNAPPY-C_VERSION="V.R.M" # Specify a stable release
+export ZOPEN_STABLE_TAG="v${SNAPPY-C_VERSION}"
 
 ###
 ### Build control file for the snappy-c port
@@ -12,7 +12,7 @@
 ###
 
 ## Specify the default build line, either 'DEV' or 'STABLE' (default: STABLE)
-export ZOPEN_BUILD_LINE="STABLE"
+export ZOPEN_BUILD_LINE="DEV"
 
 ## Required IF ZOPEN_BUILD_LINE='STABLE'
 export ZOPEN_STABLE_URL="https://github.com/andikleen/snappy-c.git"  # Specify the stable build URL (either git or tarball)
@@ -67,7 +67,7 @@ zopen_get_version()
 {
   # Modify to echo the version of your tool/library
   # Rather than hardcoding the version, obtain the version by running the tool/library
-  echo "1.0.0"
+  echo "dev"
 }
 
 
