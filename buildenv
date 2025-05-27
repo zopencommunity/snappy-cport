@@ -126,14 +126,12 @@ zopen_get_version()
 #}
 
 zopen_install() {
-  set -x
-  pwd
   mkdir -p $ZOPEN_INSTALL_DIR
- mkdir -p $ZOPEN_INSTALL_DIR/include
- mkdir -p $ZOPEN_INSTALL_DIR/lib
+  mkdir -p $ZOPEN_INSTALL_DIR/include
+  mkdir -p $ZOPEN_INSTALL_DIR/lib
   cp snappy.h "$ZOPEN_INSTALL_DIR/include"
   cp libsnappyc.so.1 "$ZOPEN_INSTALL_DIR//lib/"
-  ln -sf "$ZOPEN_INSTALL_DIR//lib/libsnappyc.so" "$ZOPEN_INSTALL_DIR/lib/libsnappyc.so.1"
+  ln -sf "$ZOPEN_INSTALL_DIR/lib/libsnappyc.so" "$ZOPEN_INSTALL_DIR/lib/libsnappyc.so.1"
 }
 #zopen_post_install(){
   ## This function runs after the 'install' step of the build is run.
@@ -156,7 +154,7 @@ zopen_install() {
 #export ZOPEN_EXTRA_CPPFLAGS="" ## C,C++ pre-processor flags to append to CPPFLAGS (defaults to '')
 #export ZOPEN_EXTRA_CXXFLAGS="" ## C++ compiler flags to append to CXXFLAGS (defaults to '')
 #export ZOPEN_EXTRA_LDFLAGS="" ## C,C++ linker flags to append to LDFLAGS (defaults to '')
-export ZOPEN_EXTRA_LIBS="-lzoslib  -lzoslib-supp" ## C,C++ libraries to append to LIBS (defaults to '')
+#export ZOPEN_EXTRA_LIBS="" ## C,C++ libraries to append to LIBS (defaults to '')
 #export ZOPEN_BOOTSTRAP_OPTS="" ## Options to pass to bootstrap program (defaults to '')
 #export ZOPEN_CHECK_MINIMAL="" ## Check program will not be passed CFLAGS, LDFLAGS, CPPFLAGS options but will get them from env vars.
 #export ZOPEN_CHECK_OPTS="" ## Options to pass to check program (defaults to 'check')
