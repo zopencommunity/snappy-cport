@@ -1,45 +1,68 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <snappy.h>
+#include <stdlib.h>
+#include "snappy.h"
 
 int main() {
-    const char *input = "This is a test string for snappy compression.";
+    const char *input = "This is a test string to be compressed using snappy.";
     size_t input_length = strlen(input);
 
+    // Step 1: Init env
     struct snappy_env env;
-    snappy_init_env(&env);
+    if (snappy_init_env(&env) != 0) {
+        fprintf(stderr, "Failed to initialize snappy_env\n");
+        return 1;
+    }
 
-    // Allocate max compressed length
+    // Step 2: Allocate buffer for compression
     size_t max_compressed_length = snappy_max_compressed_length(input_length);
-    char *compressed = malloc(max_compressed_length);
+    char *compressed = (char *)malloc(max_compressed_length);
+    if (!compressed) {
+        fprintf(stderr, "Failed to allocate compressed buffer\n");
+        snappy_free_env(&env);
+        return 1;
+    }
+
     size_t compressed_length = max_compressed_length;
 
-    // Compress
-    int result = snappy_compress(&env, input, input_length, compressed, &compressed_length);
-    if (result != 0) {
-        fprintf(stderr, "Compression failed with code %d\n", result);
+    // Step 3: Compress
+    if (snappy_compress(&env, input, input_length, compressed, &compressed_length) != 0) {
+        fprintf(stderr, "Compression failed\n");
+        free(compressed);
+        snappy_free_env(&env);
         return 1;
     }
 
-    printf("Compression successful! Compressed size: %zu bytes\n", compressed_length);
+    printf("Original: %s\n", input);
+    printf("Compressed size: %zu bytes\n", compressed_length);
 
-    // Allocate space for decompression
-    char *decompressed = malloc(input_length + 1);  // +1 for null-terminator
-    memset(decompressed, 0, input_length + 1);
-
-    result = snappy_uncompress(compressed, compressed_length, decompressed);
-    if (result != 0) {
-        fprintf(stderr, "Decompression failed with code %d\n", result);
+    // Step 4: Prepare buffer for uncompressed data
+    char *uncompressed = (char *)malloc(input_length + 1); // +1 for null terminator
+    if (!uncompressed) {
+        fprintf(stderr, "Failed to allocate uncompressed buffer\n");
+        free(compressed);
+        snappy_free_env(&env);
         return 1;
     }
 
-    printf("Decompression successful! Output: %s\n", decompressed);
+    // Step 5: Uncompress
+    if (snappy_uncompress(compressed, compressed_length, uncompressed) != 0) {
+        fprintf(stderr, "Uncompression failed\n");
+        free(compressed);
+        free(uncompressed);
+        snappy_free_env(&env);
+        return 1;
+    }
 
-    // Clean up
-    snappy_free_env(&env);
+    // Null-terminate for printing
+    uncompressed[input_length] = '\0';
+
+    printf("Uncompressed: %s\n", uncompressed);
+
+    // Step 6: Cleanup
     free(compressed);
-    free(decompressed);
+    free(uncompressed);
+    snappy_free_env(&env);
 
     return 0;
 }

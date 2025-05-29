@@ -125,13 +125,24 @@ zopen_get_version()
   ## This function runs before the 'install' step of the build is run.
 #}
 
+zopen_append_to_env()
+{
+cat <<ZZ
+if [ ! -z "\$ZOPEN_IN_ZOPEN_BUILD" ]; then
+  export ZOPEN_EXTRA_CFLAGS="\${ZOPEN_EXTRA_CFLAGS} -I\$PWD/include"
+  export ZOPEN_EXTRA_LIBS="\${ZOPEN_EXTRA_LIBS} \$PWD/lib/libsnappyc.so.x"
+fi
+ZZ
+}
+
+
 zopen_install() {
   mkdir -p $ZOPEN_INSTALL_DIR
   mkdir -p $ZOPEN_INSTALL_DIR/include
   mkdir -p $ZOPEN_INSTALL_DIR/lib
   cp snappy.h "$ZOPEN_INSTALL_DIR/include"
-  cp libsnappyc.so.1 "$ZOPEN_INSTALL_DIR//lib/"
-  ln -sf "$ZOPEN_INSTALL_DIR/lib/libsnappyc.so" "$ZOPEN_INSTALL_DIR/lib/libsnappyc.so.1"
+  cp libsnappyc.so.1 "$ZOPEN_INSTALL_DIR/lib/"
+  cp libsnappyc.so.x "$ZOPEN_INSTALL_DIR/lib/"
 }
 #zopen_post_install(){
   ## This function runs after the 'install' step of the build is run.
@@ -151,7 +162,7 @@ zopen_install() {
 ###
 
 #export ZOPEN_EXTRA_CFLAGS="" ## C compiler flags to append to CFLAGS (defaults to '').
-#export ZOPEN_EXTRA_CPPFLAGS="" ## C,C++ pre-processor flags to append to CPPFLAGS (defaults to '')
+export ZOPEN_EXTRA_CPPFLAGS="-fvisibility=default" ## C,C++ pre-processor flags to append to CPPFLAGS (defaults to '')
 #export ZOPEN_EXTRA_CXXFLAGS="" ## C++ compiler flags to append to CXXFLAGS (defaults to '')
 #export ZOPEN_EXTRA_LDFLAGS="" ## C,C++ linker flags to append to LDFLAGS (defaults to '')
 #export ZOPEN_EXTRA_LIBS="" ## C,C++ libraries to append to LIBS (defaults to '')
