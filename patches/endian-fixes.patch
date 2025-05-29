@@ -1,0 +1,56 @@
+diff --git a/Makefile b/Makefile
+index b0895e2..4328645 100644
+--- a/Makefile
++++ b/Makefile
+@@ -68,4 +68,4 @@ ftracer:
+ 	make CFLAGS='-Dstatic= -pg -mfentry -DSG=1 -g' LDFLAGS='-rdynamic ${FTRACER} -ldl' all
+ 
+ libsnappyc.so.1: snappy.o
+-	$(CC) $(LDFLAGS) -shared -o $@ $^
++	$(CC) $(LDFLAGS) ${LIBS} -shared -o $@ $^
+diff --git a/compat.h b/compat.h
+index 98d58f8..bc91bfe 100644
+--- a/compat.h
++++ b/compat.h
+@@ -14,7 +14,7 @@
+ #endif
+ 
+ 
+-#elif !defined(__WIN32__)
++#elif !defined(__WIN32__) && !defined(__MVS__)
+ #  include <endian.h>
+ #endif
+ 
+@@ -32,6 +32,32 @@
+ #define le32toh letoh32
+ #endif
+ 
++#ifdef __MVS__
++#include <stdint.h>
++#define htole16(x) __bswap16(x)
++#define le16toh(x) __bswap16(x)
++#define htole32(x) __bswap32(x)
++#define le32toh(x) __bswap32(x)
++#define htole64(x) __bswap64(x)
++#define le64toh(x) __bswap64(x)
++
++static __inline uint16_t __bswap16(uint16_t __x)
++{
++	return __x<<8 | __x>>8;
++}
++
++static __inline uint32_t __bswap32(uint32_t __x)
++{
++	return __x>>24 | __x>>8&0xff00 | __x<<8&0xff0000 | __x<<24;
++}
++
++static __inline uint64_t __bswap64(uint64_t __x)
++{
++	return __bswap32(__x)+0ULL<<32 | __bswap32(__x>>32);
++}
++
++#endif
++
+ #if defined(__WIN32__) && defined(SG)
+ struct iovec {
+ 	void *iov_base;	/* Pointer to data.  */
